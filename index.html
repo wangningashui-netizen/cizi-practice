@@ -10,12 +10,18 @@
 :root{--bg:#fdf8f0;--paper:#fffef9;--ink:#2c2416;--ink2:#5a4e3a;--ink3:#9a8b72;--red:#c0392b;--red-light:#fdf0ee;--green:#27774a;--green-light:#eef7f1;--amber:#b8720a;--amber-light:#fef8ec;--blue:#1a5f8a;--blue-light:#edf4fa;--border:#e0d5c0;--shadow:rgba(44,36,22,0.07);--radius:12px}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;background-image:repeating-linear-gradient(0deg,transparent,transparent 31px,#e8dfc8 31px,#e8dfc8 32px);background-attachment:fixed}
-.topbar{background:var(--paper);border-bottom:2px solid var(--border);padding:0 20px;display:flex;align-items:center;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px var(--shadow)}
+.topbar{background:var(--paper);border-bottom:2px solid var(--border);padding:0 16px;display:flex;align-items:center;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px var(--shadow)}
 .topbar-title{font-family:'ZCOOL XiaoWei',serif;font-size:22px;color:var(--ink);padding:14px 0;margin-right:auto;letter-spacing:2px}
 .topbar-title span{color:var(--red)}
-.tab-btn{font-family:'Noto Sans SC',sans-serif;font-size:14px;color:var(--ink3);background:none;border:none;padding:18px 18px;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;transition:color .2s,border-color .2s;white-space:nowrap}
+.tab-btn{font-family:'Noto Sans SC',sans-serif;font-size:14px;color:var(--ink3);background:none;border:none;padding:18px 14px;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;transition:color .2s,border-color .2s;white-space:nowrap}
 .tab-btn.active{color:var(--red);border-bottom-color:var(--red);font-weight:700}
 .tab-btn:hover:not(.active){color:var(--ink2)}
+.sync-btn{font-size:13px;color:var(--ink3);background:none;border:1.5px solid var(--border);border-radius:20px;padding:5px 12px;cursor:pointer;display:flex;align-items:center;gap:5px;margin-left:8px;transition:all .2s;white-space:nowrap}
+.sync-btn:hover{color:var(--ink2);border-color:var(--ink3)}
+.sync-btn.syncing{color:var(--amber);border-color:var(--amber)}
+.sync-btn.ok{color:var(--green);border-color:var(--green)}
+.sync-btn.err{color:var(--red);border-color:var(--red)}
+.sync-time{font-size:10px;color:var(--ink3);padding:0 8px;white-space:nowrap}
 .main{max-width:720px;margin:0 auto;padding:24px 16px 60px}
 .card{background:var(--paper);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:16px;box-shadow:0 2px 8px var(--shadow)}
 .card-title{font-size:13px;font-weight:700;color:var(--ink3);letter-spacing:1px;margin-bottom:14px}
@@ -25,10 +31,8 @@ input[type=text]:focus,textarea:focus{border-color:var(--amber)}
 .input-row input{flex:1}
 .btn{font-family:'Noto Sans SC',sans-serif;font-size:14px;font-weight:700;border:none;border-radius:8px;padding:10px 18px;cursor:pointer;transition:opacity .15s,transform .1s;white-space:nowrap;display:inline-flex;align-items:center;gap:5px}
 .btn:active{transform:scale(.97)}
-.btn-primary{background:var(--red);color:#fff}
-.btn-primary:hover{opacity:.88}
-.btn-outline{background:transparent;color:var(--ink2);border:1.5px solid var(--border)}
-.btn-outline:hover{background:var(--bg)}
+.btn-primary{background:var(--red);color:#fff}.btn-primary:hover{opacity:.88}
+.btn-outline{background:transparent;color:var(--ink2);border:1.5px solid var(--border)}.btn-outline:hover{background:var(--bg)}
 .btn-sm{font-size:12px;padding:6px 12px;border-radius:6px}
 .btn-icon{padding:7px 10px}
 .stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:10px;margin-bottom:16px}
@@ -91,7 +95,8 @@ input[type=text]:focus,textarea:focus{border-color:var(--amber)}
 .session-config{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px}
 .session-config label{font-size:13px;color:var(--ink2)}
 .session-config select{width:auto;font-size:13px;padding:7px 10px}
-@media(max-width:500px){.topbar-title{font-size:18px}.tab-btn{padding:16px 11px;font-size:13px}.quiz-word-display{font-size:40px}.char-grid{grid-template-columns:repeat(auto-fill,minmax(120px,1fr))}}
+.sync-banner{background:var(--amber-light);border:1px solid #f0d090;border-radius:10px;padding:12px 16px;font-size:13px;color:var(--amber);margin-bottom:16px;display:none}
+@media(max-width:500px){.topbar-title{font-size:18px}.tab-btn{padding:16px 10px;font-size:12px}.sync-btn{font-size:12px;padding:4px 8px}.quiz-word-display{font-size:40px}.char-grid{grid-template-columns:repeat(auto-fill,minmax(120px,1fr))}}
 </style>
 </head>
 <body>
@@ -101,7 +106,9 @@ input[type=text]:focus,textarea:focus{border-color:var(--amber)}
   <button class="tab-btn active" onclick="showPage('words',this)">📚 错字库</button>
   <button class="tab-btn" onclick="showPage('quiz',this)">✍️ 听写</button>
   <button class="tab-btn" onclick="showPage('history',this)">📋 记录</button>
+  <button class="sync-btn" id="syncBtn" onclick="syncNow()" title="同步数据">☁️ 同步</button>
 </div>
+
 <div class="toast" id="toast"></div>
 
 <!-- ADD MODAL -->
@@ -157,6 +164,7 @@ input[type=text]:focus,textarea:focus{border-color:var(--amber)}
 
 <!-- PAGE: WORDS -->
 <div class="main page active" id="page-words">
+  <div id="syncBanner" class="sync-banner">⚠️ 有未同步的改动，点右上角「☁️ 同步」保存到云端</div>
   <div class="stats-row">
     <div class="stat-card stat-red"><div class="stat-num" id="stat-total">0</div><div class="stat-label">总错字数</div></div>
     <div class="stat-card stat-amber"><div class="stat-num" id="stat-active">0</div><div class="stat-label">练习中</div></div>
@@ -241,10 +249,114 @@ input[type=text]:focus,textarea:focus{border-color:var(--amber)}
 
 <script>
 // ============================================================
-// 词库：2000+ 条，覆盖小学 1-6 年级常用字
-// 格式：每行多个词，空格分隔
+// GitHub 同步配置
 // ============================================================
-const WORD_BANK = `
+const GH = {
+  owner: 'wangningashui-netizen',
+  repo:  'cizi-practice',
+  file:  'data.json',
+  token: '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',
+  get api() {
+    return `https://api.github.com/repos/${this.owner}/${this.repo}/contents/${this.file}`;
+  }
+};
+
+let syncSha = null;       // 记录文件的 sha，更新时需要
+let pendingSync = false;  // 有未同步的改动
+let syncTimer = null;     // 自动同步防抖
+
+async function ghGet() {
+  const r = await fetch(GH.api, {
+    headers: { Authorization: `token ${GH.token}`, Accept: 'application/vnd.github.v3+json' }
+  });
+  if (r.status === 404) return null;
+  if (!r.ok) throw new Error('读取失败 ' + r.status);
+  const j = await r.json();
+  syncSha = j.sha;
+  return JSON.parse(atob(j.content.replace(/\n/g,'')));
+}
+
+async function ghPut(d) {
+  const body = { message: '数据同步 ' + new Date().toLocaleString('zh-CN'),
+    content: btoa(unescape(encodeURIComponent(JSON.stringify(d)))),
+    ...(syncSha ? { sha: syncSha } : {}) };
+  const r = await fetch(GH.api, {
+    method: 'PUT',
+    headers: { Authorization: `token ${GH.token}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  if (!r.ok) throw new Error('写入失败 ' + r.status);
+  const j = await r.json();
+  syncSha = j.content.sha;
+}
+
+function setSyncState(state, msg) {
+  const btn = document.getElementById('syncBtn');
+  btn.className = 'sync-btn' + (state ? ' ' + state : '');
+  btn.textContent = { syncing:'⏳ 同步中', ok:'✓ 已同步', err:'✗ 同步失败', '':'☁️ 同步' }[state] || '☁️ 同步';
+  if (msg) toast(msg);
+  if (state === 'ok' || state === 'err') setTimeout(() => setSyncState(''), 3000);
+}
+
+async function syncNow() {
+  setSyncState('syncing');
+  try {
+    await ghPut(data);
+    pendingSync = false;
+    document.getElementById('syncBanner').style.display = 'none';
+    setSyncState('ok', '数据已同步到云端 ☁️');
+    localStorage.setItem('lastSync', new Date().toISOString());
+  } catch(e) {
+    setSyncState('err', '同步失败，请检查网络');
+    console.error(e);
+  }
+}
+
+// 有改动时标记，5 秒后自动同步
+function markDirty() {
+  pendingSync = true;
+  document.getElementById('syncBanner').style.display = '';
+  clearTimeout(syncTimer);
+  syncTimer = setTimeout(syncNow, 5000);
+}
+
+// 启动时从 GitHub 拉取数据
+async function initSync() {
+  setSyncState('syncing');
+  try {
+    const remote = await ghGet();
+    if (remote) {
+      // 比较本地和云端，取最新的（按 totalSessions 判断）
+      const local = load();
+      if (!local.chars.length || (remote.totalSessions || 0) >= (local.totalSessions || 0)) {
+        data = remote;
+        save(data);
+        toast('已从云端加载最新数据 ☁️');
+      } else {
+        // 本地更新，推送到云端
+        data = local;
+        await ghPut(data);
+        toast('本地数据更新，已同步到云端');
+      }
+    } else {
+      // 云端还没有文件，用本地数据初始化
+      data = load();
+      await ghPut(data);
+      toast('已初始化云端数据 ☁️');
+    }
+    setSyncState('ok');
+  } catch(e) {
+    data = load();
+    setSyncState('err', '云端连接失败，使用本地数据');
+    console.error(e);
+  }
+  renderWords();
+}
+
+// ============================================================
+// 词库
+// ============================================================
+const WORDS = [...new Set(`
 太阳 月亮 星星 花朵 树木 小鸟 蜜蜂 蝴蝶 蚂蚁 青蛙 彩虹 雨水 雪花 白云 风筝 小草 树叶 果实 种子 花园
 春天 夏天 秋天 冬天 春风 秋雨 冬雪 春雨 秋风 春色 秋景 春暖花开 秋高气爽 春意盎然 春暖 秋凉
 爸爸 妈妈 爷爷 奶奶 弟弟 妹妹 哥哥 姐姐 老师 同学 朋友 邻居 叔叔 阿姨 孩子 儿童 娃娃 家人 亲人 家庭
@@ -255,132 +367,80 @@ const WORD_BANK = `
 早晨 傍晚 黑夜 清晨 正午 日落 黎明 夕阳 朝霞 晚霞 黄昏 拂晓 深夜 午夜 凌晨 清早 上午 下午 夜晚 午后
 发现 探索 观察 思考 问题 答案 方法 结果 过程 实验 发明 创造 设计 研究 分析 比较 总结 归纳 猜测 验证
 美丽 漂亮 整洁 干净 整齐 清楚 明白 清晰 仔细 认真 小心 耐心 细心 专心 用心 虚心 热心 真心 爱心 良心
-帮助 合作 友好 礼貌 谦虚 尊重 关心 爱护 保护 珍惜 节约 爱惜 维护 守护 呵护 照顾 陪伴 看护 照料 守候
 灿烂 明亮 温暖 凉爽 寒冷 炎热 湿润 干燥 新鲜 清新 温和 暖和 凉快 酷热 严寒 微凉 闷热 潮湿 阴凉 清凉
 宽阔 狭窄 平坦 崎岖 陡峭 险峻 幽静 热闹 繁华 荒凉 辽阔 广阔 开阔 狭长 笔直 弯曲 蜿蜒 曲折 笔挺 挺拔
-坚持 努力 奋斗 拼搏 刻苦 勤奋 踏实 朴素 节俭 勤劳 勤恳 勤勉 吃苦 耐苦 刻苦学习 勤俭节约 踏实苦干 埋头苦干
+坚持 努力 奋斗 拼搏 刻苦 勤奋 踏实 朴素 节俭 勤劳 勤恳 勤勉 吃苦 刻苦学习 勤俭节约 踏实苦干 埋头苦干
 丰收 收获 成功 胜利 失败 挫折 困难 挑战 机会 希望 机遇 成果 奖励 进步 提高 成长 提升 突破 超越 实现
 蓝天 白云 碧水 绿地 山川 河湖 大海 草原 森林 沙漠 高山 平原 丘陵 盆地 峡谷 悬崖 瀑布 湖泊 沼泽 湿地
 月季 玫瑰 牡丹 菊花 梅花 桃花 梨花 荷花 水仙 兰花 茉莉 丁香 杜鹃 海棠 樱花 桂花 腊梅 向日葵 雏菊 蒲公英
 传说 故事 神话 童话 寓言 历史 文化 文明 传统 习俗 风俗 民俗 民间 古代 现代 当代 近代 远古 上古 中古
 璀璨 绚烂 壮丽 雄伟 宏大 宏伟 壮观 奇妙 神奇 奇特 瑰丽 绮丽 奇异 奇幻 奇观 奇景 奇迹 壮举 伟业 盛事
-高瞻远瞩 深谋远虑 运筹帷幄 足智多谋 料事如神 明察秋毫 洞察秋毫 见微知著 一叶知秋 举一反三 触类旁通 融会贯通
-鞠躬尽瘁 死而后已 舍生取义 精忠报国 赤胆忠心 碧血丹心 忠肝义胆 以身殉国 慷慨赴义 视死如归 大义凛然 威武不屈
-气壮山河 惊天动地 翻天覆地 天翻地覆 沧海桑田 日新月异 与时俱进 突飞猛进 蒸蒸日上 欣欣向荣 蓬勃发展 繁荣昌盛
-争分夺秒 只争朝夕 时不我待 分秒必争 珍惜光阴 惜时如金 光阴似箭 岁月如梭 时光飞逝 白驹过隙 流年似水 韶华易逝
-千里迢迢 跋山涉水 一往无前 一马当先 奋勇当先 身先士卒 冲锋陷阵 赴汤蹈火 出生入死 浴血奋战 前赴后继 英勇无畏
 一心一意 专心致志 废寝忘食 悬梁刺股 凿壁借光 囊萤映雪 闻鸡起舞 手不释卷 韦编三绝 学海无涯 博览群书 勤学苦练
 笨鸟先飞 勤能补拙 熟能生巧 水滴石穿 铁杵磨针 精卫填海 愚公移山 夸父逐日 嫦娥奔月 后羿射日 女娲补天 大禹治水
-画蛇添足 亡羊补牢 守株待兔 掩耳盗铃 滥竽充数 郑人买履 买椟还珠 刻舟求剑 南辕北辙 缘木求鱼 拔苗助长 揠苗助长
-狐假虎威 鹤立鸡群 如鱼得水 对牛弹琴 马到成功 龙马精神 虎头蛇尾 狗急跳墙 鸡鸣狗盗 鼠目寸光 兔死狗烹 狼狈为奸
-一石二鸟 一举两得 一箭双雕 一网打尽 一帆风顺 一鸣惊人 一飞冲天 一落千丈 一泻千里 一蹴而就 一步登天 一鼓作气
-两全其美 三心二意 四面楚歌 五花八门 六神无主 七上八下 八面玲珑 九牛一毛 十全十美 百发百中 千军万马 万紫千红
-百折不挠 百战百胜 百年大计 百年树人 百口莫辩 百感交集 百思不解 百闻不如一见 百花齐放 百家争鸣 百花争艳 百鸟朝凤
+画蛇添足 亡羊补牢 守株待兔 掩耳盗铃 滥竽充数 郑人买履 买椟还珠 刻舟求剑 南辕北辙 缘木求鱼 拔苗助长
+狐假虎威 鹤立鸡群 如鱼得水 对牛弹琴 马到成功 龙马精神 虎头蛇尾 狗急跳墙 鸡鸣狗盗 鼠目寸光 兔死狗烹
+一石二鸟 一举两得 一箭双雕 一网打尽 一帆风顺 一鸣惊人 一飞冲天 一落千丈 一泻千里 一蹴而就 一鼓作气
+两全其美 三心二意 四面楚歌 五花八门 六神无主 七上八下 八面玲珑 九牛一毛 十全十美 百发百中 千军万马
+百折不挠 百战百胜 百年大计 百年树人 百口莫辩 百感交集 百思不解 百闻不如一见 百花齐放 百家争鸣 百花争艳
 冰清玉洁 洁白无瑕 一尘不染 纤尘不染 碧空如洗 水天一色 碧波荡漾 波光粼粼 风平浪静 湖光山色 山清水秀 风景如画
-光明磊落 顶天立地 堂堂正正 正大光明 公正廉洁 清正廉明 刚正不阿 铁面无私 秉公执法 执法如山 公平公正 廉洁奉公
-生龙活虎 虎背熊腰 英姿飒爽 威风凛凛 气宇轩昂 相貌堂堂 仪表不凡 风度翩翩 温文尔雅 彬彬有礼 落落大方 神采飞扬
-笑逐颜开 眉飞色舞 喜形于色 欢天喜地 兴高采烈 手舞足蹈 欢呼雀跃 拍手称快 如获至宝 喜出望外 欣喜若狂 乐不思蜀
-愁眉苦脸 垂头丧气 无精打采 萎靡不振 心灰意冷 灰心丧气 唉声叹气 叫苦连天 苦不堪言 苦闷彷徨 忧心忡忡 愁肠百结
-目瞪口呆 瞠目结舌 张口结舌 哑口无言 忍俊不禁 捧腹大笑 哄堂大笑 前俯后仰 笑声连连 喜笑颜开 破涕为笑 含笑九泉
-大公无私 舍己为人 助人为乐 见义勇为 拾金不昧 扶危济困 雪中送炭 锦上添花 慷慨解囊 乐善好施 乐于助人 无私奉献
-忘恩负义 恩将仇报 以怨报德 背信弃义 过河拆桥 落井下石 趁火打劫 浑水摸鱼 偷鸡摸狗 鸡鸣狗盗 狗仗人势 为虎作伥
-争先恐后 你追我赶 奋勇争先 奋不顾身 舍生忘死 赴汤蹈火 视死如归 大义凛然 英勇无畏 无所畏惧 临危不惧 勇往直前
-小心翼翼 如履薄冰 如临深渊 战战兢兢 提心吊胆 心惊胆战 毛骨悚然 不寒而栗 胆战心惊 惶惶不安 心神不宁 忐忑不安
-深思熟虑 慎重考虑 三思而行 反复斟酌 再三权衡 仔细推敲 认真思索 冥思苦想 绞尽脑汁 苦思冥想 反复思考 认真考虑
-言简意赅 简明扼要 简洁明了 言之有物 言之有理 言之凿凿 言而有信 一诺千金 一言九鼎 金口玉言 句句属实 字字珠玑
-精益求精 力求完美 一丝不苟 认真负责 尽职尽责 尽心尽力 恪尽职守 忠于职守 兢兢业业 勤勤恳恳 踏踏实实 认真踏实
-生活 学习 工作 劳动 休息 娱乐 运动 锻炼 健康 卫生 清洁 整理 打扫 烹饪 购物 旅行 出行 交通 通讯 联系
-家庭 社会 国家 民族 世界 地球 宇宙 自然 环境 生态 资源 能源 科技 文化 艺术 体育 音乐 美术 舞蹈 戏剧
-勇敢 坚强 坚定 坚韧 顽强 刚强 刚毅 刚直 正直 正义 忠诚 忠实 守信 守诺 守时 守规 守法 遵守 遵循 遵从
-温柔 温和 和蔼 和善 善良 善意 友善 友好 友爱 亲善 亲和 亲密 亲切 慈祥 慈爱 慈悲 关爱 体贴 体谅 包容
-聪明 智慧 机智 灵活 灵敏 灵巧 敏锐 敏捷 精明 精干 干练 能干 能力 才能 才华 才智 天才 天赋 悟性 领悟
-认真 负责 仔细 细心 耐心 恒心 信心 决心 毅力 果断 果敢 果决 坚决 坚持 坚守 坚信 坚定 坚强 坚忍 坚毅
-感恩 感谢 感激 庆幸 珍惜 珍视 重视 尊重 敬重 敬仰 崇拜 崇敬 钦佩 欣赏 赞赏 赞叹 赞美 夸奖 表扬 鼓励
-节气 春分 清明 谷雨 立夏 小满 芒种 夏至 小暑 大暑 立秋 处暑 白露 秋分 寒露 霜降 立冬 小雪 大雪 冬至
-春节 元宵节 清明节 端午节 七夕节 中秋节 重阳节 冬至节 腊八节 除夕 元旦 劳动节 国庆节 建党节 教师节 儿童节
-长江 黄河 珠江 淮河 黑龙江 松花江 怒江 澜沧江 雅鲁藏布江 塔里木河 漓江 嘉陵江 岷江 汉江 赣江 湘江
-泰山 华山 衡山 嵩山 恒山 黄山 庐山 武夷山 峨眉山 武当山 昆仑山 天山 祁连山 秦岭 大别山 燕山 太行山
-诗歌 散文 小说 戏剧 寓言 童话 神话 传说 故事 文章 段落 句子 词语 生字 课文 日记 作文 书信 报告 总结
-比喻 拟人 排比 对偶 夸张 反问 设问 对比 借代 象征 联想 想象 渲染 烘托 衬托 映衬 点睛 点题 首尾 呼应
-蛋糕 鸡蛋 蛋白 蛋黄 蛋液 彩蛋 皮蛋 咸蛋 荷包蛋 蛋花汤 蛋炒饭 蛋挞 鸭蛋 鹌鹑蛋 蛋壳 蛋清
-篮球 篮子 篮筐 花篮 篮板 竹篮 篮框 篮架 投篮 篮球场 篮球队 篮球赛 篮球运动 篮球明星
-花瓣 瓣膜 瓣状 心瓣 花瓣儿 瓣香 莲瓣 梅瓣 残瓣 落瓣 瓣形 瓣叶
-骗子 欺骗 行骗 诈骗 骗局 骗术 骗人 骗取 骗钱 被骗 上骗 骗案 骗法 受骗 骗招
-偏见 偏心 偏差 偏向 偏爱 偏颇 偏激 偏僻 偏旁 偏远 偏转 偏斜 偏移 偏好 偏执
-编写 编辑 编排 编织 编号 编制 编码 编程 编译 编者 编目 编导 编曲 编剧 编年
-辩论 辩护 辩解 辩证 辩才 辩手 辩白 答辩 辩驳 辩识 辩明 辩清 争辩 强辩 诡辩
-辨别 辨认 辨明 辨析 辨清 辨别是非 明辨是非 辨识 辨证 鉴别 分辨 辩辨 识别 判别 区别
-瓜子 瓜果 瓜皮 瓜藤 瓜田 瓜秧 瓜蔓 瓜棚 黄瓜 南瓜 冬瓜 丝瓜 苦瓜 西瓜 甜瓜 哈密瓜
-蔓延 蔓草 蔓生 蔓藤 枝蔓 蔓越莓 葡萄蔓 瓜蔓 藤蔓 蔓状 蔓延开来
-蜂蜜 蜂巢 蜂房 蜂群 蜂王 蜂窝 蜂鸣 蜜蜂 蜜糖 蜜罐 花蜜 蜂蜜茶 蜜月 甜蜜 蜜语
-蚕丝 蚕茧 蚕宝宝 春蚕 蚕食 蚕豆 蚕蛾 蚕桑 养蚕 蚕室 蚕农 蚕蔟
-漂亮 漂浮 漂流 漂泊 漂白 漂洗 漂移 漂荡 漂零 飘飘 漂染 漂亮话
-飘扬 飘动 飘落 飘荡 飘散 飘逸 飘零 飘然 飘忽 飘渺 飘雪 飘飘然 飘带 随风飘扬
-燃烧 燃料 燃气 燃点 点燃 自燃 燃放 燃烟 燃灯 助燃 可燃 燃烛 内燃机
-煤炭 炭火 木炭 炭笔 炭黑 炭画 活性炭 炭盆 炭精 竹炭 炭化 炭色
-碳素 碳水化合物 碳排放 碳中和 低碳 碳纤维 碳酸 碳链 碳原子 二氧化碳 碳基 碳循环
-错误 错字 错题 错误率 改错 纠错 出错 差错 过错 犯错 认错 更正 改正 纠正 修正
-学习 学校 学生 学问 学科 学期 学年 学历 学力 学识 学者 学术 好学 勤学 博学 励学
-作业 作文 作者 作品 作曲 作词 作画 作诗 创作 写作 著作 杰作 名作 力作 佳作
-笔画 笔顺 笔法 笔记 笔墨 钢笔 毛笔 铅笔 圆珠笔 粉笔 画笔 彩笔 笔芯 笔筒 笔袋
-墨水 墨汁 墨迹 墨香 墨宝 水墨 墨笔 墨色 墨迹 墨池 泼墨 挥毫泼墨 笔墨纸砚
-纸张 纸片 纸板 纸箱 白纸 信纸 画纸 复印纸 卫生纸 纸巾 纸条 纸币 纸牌 纸灯笼
-字体 字形 字音 字义 字典 字词 汉字 数字 文字 正字 错字 字迹 字帖 大字 小字
-词语 词汇 词组 成语 俗语 谚语 歇后语 惯用语 术语 用词 词义 词典 词句 词牌 词曲
-句子 句型 句式 短句 长句 问句 陈述句 疑问句 感叹句 祈使句 复句 单句
-段落 段意 自然段 首段 末段 中间段 过渡段 开头 结尾 中间 起承转合
-书写 书法 书本 书籍 书架 书柜 书店 书签 书包 课书 读书 看书 抄书 背书
-阅读 阅览 阅历 博览 精读 略读 速读 朗读 默读 齐读 领读 范读 熟读 研读
-诗歌 诗词 诗句 诗篇 诗集 诗人 诗情 诗意 诗画 古诗 律诗 绝句 词牌 曲牌
-山水 山林 山地 山坡 山谷 山峰 山顶 山脚 山路 山村 山川 登山 爬山 上山 下山
-水面 水底 水中 水边 水草 水鸟 水产 水库 水坝 水闸 水渠 水流 水波 水花 水珠
+光明磊落 顶天立地 堂堂正正 正大光明 公正廉洁 清正廉明 刚正不阿 铁面无私 秉公执法 执法如山
+生龙活虎 虎背熊腰 英姿飒爽 威风凛凛 气宇轩昂 相貌堂堂 仪表不凡 风度翩翩 温文尔雅 彬彬有礼 落落大方
+笑逐颜开 眉飞色舞 喜形于色 欢天喜地 兴高采烈 手舞足蹈 欢呼雀跃 拍手称快 如获至宝 喜出望外 欣喜若狂
+愁眉苦脸 垂头丧气 无精打采 萎靡不振 心灰意冷 灰心丧气 唉声叹气 叫苦连天 苦不堪言 苦闷彷徨 忧心忡忡
+目瞪口呆 瞠目结舌 张口结舌 哑口无言 忍俊不禁 捧腹大笑 哄堂大笑 前俯后仰 笑声连连 喜笑颜开 破涕为笑
+大公无私 舍己为人 助人为乐 见义勇为 拾金不昧 扶危济困 雪中送炭 锦上添花 慷慨解囊 乐善好施 无私奉献
+争先恐后 你追我赶 奋勇争先 奋不顾身 舍生忘死 赴汤蹈火 视死如归 大义凛然 英勇无畏 无所畏惧 勇往直前
+深思熟虑 慎重考虑 三思而行 反复斟酌 再三权衡 仔细推敲 冥思苦想 绞尽脑汁 苦思冥想 反复思考
+精益求精 力求完美 一丝不苟 认真负责 尽职尽责 尽心尽力 恪尽职守 忠于职守 兢兢业业 勤勤恳恳 踏踏实实
+蛋糕 鸡蛋 蛋白 蛋黄 彩蛋 皮蛋 咸蛋 荷包蛋 蛋花汤 蛋炒饭 蛋挞 鸭蛋 鹌鹑蛋 蛋壳 蛋清
+篮球 篮子 篮筐 花篮 篮板 竹篮 篮框 篮架 投篮 篮球场 篮球队 篮球赛 篮球运动
+花瓣 瓣膜 心瓣 莲瓣 梅瓣 残瓣 落瓣 瓣叶 瓣形 瓣状
+骗子 欺骗 行骗 诈骗 骗局 骗术 骗人 骗取 骗钱 被骗 受骗 骗招
+偏见 偏心 偏差 偏向 偏爱 偏颇 偏激 偏僻 偏旁 偏远 偏转 偏斜 偏执
+编写 编辑 编排 编织 编号 编制 编码 编程 编译 编者 编目 编导 编曲 编剧
+辩论 辩护 辩解 辩证 辩才 辩手 辩白 答辩 辩驳 争辩 强辩 诡辩
+辨别 辨认 辨明 辨析 辨清 辨别是非 明辨是非 辨识 辨证 鉴别 分辨 识别 判别 区别
+蜂蜜 蜂巢 蜂房 蜂群 蜂王 蜂窝 蜂鸣 蜜蜂 蜜糖 蜜罐 花蜜 甜蜜 蜜语 蜜月
+燃烧 燃料 燃气 燃点 点燃 自燃 燃放 燃烟 助燃 可燃 内燃机
+煤炭 炭火 木炭 炭笔 炭黑 炭画 活性炭 炭盆 竹炭 炭化 炭色
+碳素 碳水化合物 碳排放 碳中和 低碳 碳纤维 碳酸 二氧化碳 碳循环
+错误 错字 错题 改错 纠错 出错 差错 过错 犯错 认错 更正 改正 纠正 修正
+学习 学校 学生 学问 学科 学期 学年 学历 学识 好学 勤学 博学
+作业 作文 作者 作品 作曲 作词 作画 创作 写作 著作 杰作 名作 佳作
+笔画 笔顺 笔法 笔记 笔墨 钢笔 毛笔 铅笔 圆珠笔 粉笔 画笔 彩笔 笔芯 笔筒
+墨水 墨汁 墨迹 墨香 水墨 墨笔 墨色 墨池 泼墨 笔墨纸砚
+纸张 纸片 纸板 纸箱 白纸 信纸 画纸 复印纸 卫生纸 纸巾 纸条 纸币 纸灯笼
+字体 字形 字音 字义 字典 字词 汉字 数字 文字 正字 错字 字迹 字帖
+词语 词汇 词组 成语 俗语 谚语 歇后语 惯用语 术语 词义 词典 词句
+诗歌 散文 小说 戏剧 寓言 童话 神话 传说 文章 段落 句子 课文 日记 作文
+比喻 拟人 排比 对偶 夸张 反问 设问 对比 借代 象征 联想 想象 渲染 烘托 衬托
+山水 山林 山地 山坡 山谷 山峰 山顶 山脚 山路 山村 登山 爬山
+水面 水底 水中 水边 水草 水鸟 水产 水库 水坝 水渠 水流 水波 水花 水珠
 风雨 风雪 风景 风光 风俗 风貌 风格 风味 风情 风趣 风波 风浪 和风 微风 暖风
-云朵 云海 云层 云彩 云端 云雾 云霞 云霄 浮云 白云 彩云 乌云 积云 云卷云舒
-草地 草原 草坪 草丛 草木 草叶 草根 草莓 青草 小草 杂草 茂草 牧草 野草
-花草 花木 花丛 花坛 花盆 花圃 花园 花香 花开 落花 鲜花 野花 路花 百花
-树林 树木 树叶 树枝 树根 树干 树皮 树冠 树荫 树洞 大树 小树 果树 松树 柳树
+云朵 云海 云层 云彩 云端 云雾 云霞 云霄 浮云 白云 彩云 乌云 积云
+草地 草原 草坪 草丛 草木 草叶 草根 青草 小草 杂草 茂草 牧草 野草
+树林 树木 树叶 树枝 树根 树干 树皮 树冠 树荫 树洞 大树 果树 松树 柳树
 鸟儿 鸟巢 鸟鸣 鸟类 鸟语 百鸟 候鸟 益鸟 珍鸟 鸟翼 小鸟 大鸟 飞鸟 鸣鸟
 虫子 虫洞 虫鸣 昆虫 害虫 益虫 小虫 爬虫 毛虫 幼虫 成虫 寄生虫
-鱼儿 鱼类 鱼鳞 鱼鳍 鱼尾 鱼缸 鱼塘 鱼翁 鱼竿 钓鱼 养鱼 金鱼 草鱼 鲤鱼 鲫鱼
-猫咪 猫爪 猫眼 猫耳 小猫 花猫 黑猫 白猫 野猫 宠物猫 猫捉老鼠
-狗狗 小狗 大狗 狗窝 狗叫 看门狗 导盲犬 狗粮 宠物狗 狗尾巴
-兔子 小兔 白兔 兔毛 兔耳 兔跑 兔跳 兔年 月兔 玉兔 兔唇
-鸡蛋 小鸡 母鸡 公鸡 老母鸡 鸡毛 鸡鸣 鸡窝 鸡腿 鸡翅 烤鸡 炸鸡 鸡汤
-鸭子 小鸭 母鸭 鸭蛋 鸭毛 鸭嘴 鸭掌 鸭舌 烤鸭 鸭绒
-鹅鹅鹅 大白鹅 鹅毛 鹅卵石 鹅黄 小鹅 天鹅 鹅颈
-牛奶 奶牛 小牛 黄牛 水牛 牛角 牛尾 牛蹄 牛群 牛车 牛郎
-羊肉 小羊 山羊 绵羊 羊毛 羊角 羊奶 羊群 牧羊 喜羊羊 羊年
-猪肉 小猪 大猪 猪圈 猪尾 猪蹄 猪耳 猪皮 猪年 小猪佩奇
-马儿 小马 白马 黑马 大马 骑马 赛马 马场 马车 马蹄 马尾 马年
-驴子 小驴 毛驴 驴车 骑驴 驴年 驴子拉磨
-骆驼 沙漠骆驼 双峰驼 单峰驼 骆驼队 骆驼刺
-熊猫 大熊猫 小熊猫 熊猫宝宝 国宝 可爱 保护动物 濒危动物
-老虎 小老虎 虎年 虎皮 虎威 老虎山 虎穴 虎口 虎牙 虎头虎脑
-狮子 小狮子 雄狮 母狮 狮群 狮子头 狮吼 狮年 舞狮 狮子座
-狐狸 小狐狸 狐狸精 狐假虎威 狐狸尾巴
-猴子 小猴子 猴年 猴王 猴群 孙悟空 猴爪 猴毛 猴子捞月
-鱼缸 大鱼 小鱼 鱼网 捕鱼 养鱼 鱼刺 鱼市 鱼干 鱼片 鱼肉 鱼汤
-海豚 海豹 海狮 海象 海龟 海马 鲸鱼 鲨鱼 章鱼 螃蟹 龙虾 虾米 贝壳 珊瑚
-红色 黄色 蓝色 绿色 白色 黑色 紫色 橙色 粉色 灰色 棕色 银色 金色 青色 藏青
-天蓝 草绿 玫红 橘黄 米白 浅蓝 深红 翠绿 明黄 鹅黄 湖蓝 宝蓝 酒红 墨绿 米黄
+鱼儿 鱼类 鱼鳞 鱼鳍 鱼尾 鱼缸 鱼塘 鱼竿 钓鱼 养鱼 金鱼 草鱼 鲤鱼 鲫鱼 鲸鱼 鲨鱼
+猫咪 猫爪 猫眼 猫耳 小猫 花猫 黑猫 白猫 野猫 宠物猫
+狗狗 小狗 大狗 狗窝 看门狗 导盲犬 宠物狗
+兔子 小兔 白兔 兔毛 兔耳 兔跑 兔年 月兔 玉兔
+牛奶 奶牛 小牛 黄牛 水牛 牛角 牛尾 牛蹄 牛群 牛郎
+马儿 小马 白马 黑马 骑马 赛马 马场 马车 马蹄 马尾 马年
+熊猫 大熊猫 小熊猫 熊猫宝宝 国宝
+红色 黄色 蓝色 绿色 白色 黑色 紫色 橙色 粉色 灰色 棕色 银色 金色 青色
+天蓝 草绿 玫红 橘黄 米白 浅蓝 深红 翠绿 明黄 鹅黄 湖蓝 宝蓝 酒红 墨绿
 吃饭 喝水 睡觉 起床 洗澡 洗脸 刷牙 梳头 穿衣 穿鞋 走路 跑步 跳绳 游泳 骑车
-唱歌 跳舞 画画 看书 听音乐 打球 踢球 下棋 玩具 积木 拼图 泥塑 剪纸 折纸 捏泥
-开心果 开心颜 笑容 笑脸 微笑 大笑 嬉笑 嘻嘻 哈哈 咯咯 哈哈大笑 笑得合不拢嘴
-难过时 悲伤时 哭泣 流泪 泪水 泪滴 泪痕 泪流满面 哭声 哭鼻子 伤心 心痛 揪心
-害怕了 恐惧 胆怯 紧张 慌张 惊慌 发抖 打颤 心跳 心跳加速 心惊 惊吓
+唱歌 跳舞 画画 看书 听音乐 打球 踢球 下棋 玩具 积木 拼图 剪纸 折纸
 节日 假日 假期 寒假 暑假 周末 休息日 工作日 平日 节假日
-早饭 午饭 晚饭 早餐 午餐 晚餐 零食 点心 甜点 零嘴 糖果 饼干 蛋糕 面包
-`.trim().split(/\s+/).filter(w => /[\u4e00-\u9fa5]/.test(w) && w.length >= 2);
+早饭 午饭 晚饭 早餐 午餐 晚餐 零食 点心 甜点 糖果 饼干 蛋糕 面包
+`.trim().split(/\s+/).filter(w => /[\u4e00-\u9fa5]/.test(w) && w.length >= 2))];
 
-// 去重
-const WORDS = [...new Set(WORD_BANK)];
-
-function findWordsFor(ch) {
-  return WORDS.filter(w => w.includes(ch));
-}
+function findWords(ch) { return WORDS.filter(w => w.includes(ch)); }
 
 // ============================================================
-//  数据
+// 数据
 // ============================================================
 const SK = 'cuzipractice_v3';
 function load() { try { return JSON.parse(localStorage.getItem(SK)) || mk(); } catch(e) { return mk(); } }
@@ -389,12 +449,11 @@ function mk() { return { chars:[], history:[], totalSessions:0 }; }
 let data = load();
 
 function mkChar(ch, src) {
-  const ws = findWordsFor(ch);
+  const ws = findWords(ch);
   return { id: Date.now()+'_'+Math.random().toString(36).slice(2), ch, source:src||'',
     words: shuffle(ws).slice(0,15), weight:10, correct:0, wrong:0, streak:0,
     graduated:false, addedAt:new Date().toISOString() };
 }
-
 function badge(c) {
   if(c.graduated) return ['badge-done','已掌握'];
   if(c.streak>=2) return ['badge-good','较熟'];
@@ -402,35 +461,32 @@ function badge(c) {
   if(c.wrong>c.correct) return ['badge-learning','需加强'];
   return ['badge-learning','练习中'];
 }
-
 function updW(c) {
   if(c.graduated){c.weight=0;return;}
-  c.weight = Math.max(1, 10 + c.wrong*4 - c.correct*2 - c.streak*3);
+  c.weight=Math.max(1,10+c.wrong*4-c.correct*2-c.streak*3);
 }
-
 function checkGrad(c) {
-  if(c.streak>=3 && !c.graduated){c.graduated=true;c.weight=0;return true;}
+  if(c.streak>=3&&!c.graduated){c.graduated=true;c.weight=0;return true;}
   return false;
 }
 
+// 保存并标记需同步
+function saveAndSync(d) { save(d); markDirty(); }
+
 // ============================================================
-//  错字库页
+// 错字库
 // ============================================================
 function renderWords() {
-  const active = data.chars.filter(c=>!c.graduated);
-  const grad = data.chars.filter(c=>c.graduated);
-  document.getElementById('stat-total').textContent = data.chars.length;
-  document.getElementById('stat-active').textContent = active.length;
-  document.getElementById('stat-grad').textContent = grad.length;
-  document.getElementById('stat-sessions').textContent = data.totalSessions;
-
-  const g = document.getElementById('charGrid');
-  const e = document.getElementById('emptyWords');
+  const active=data.chars.filter(c=>!c.graduated);
+  const grad=data.chars.filter(c=>c.graduated);
+  document.getElementById('stat-total').textContent=data.chars.length;
+  document.getElementById('stat-active').textContent=active.length;
+  document.getElementById('stat-grad').textContent=grad.length;
+  document.getElementById('stat-sessions').textContent=data.totalSessions;
+  const g=document.getElementById('charGrid'),e=document.getElementById('emptyWords');
   if(!active.length){g.innerHTML='';e.style.display='';}
   else{e.style.display='none';g.innerHTML=active.map(charHTML).join('');}
-
-  const gs = document.getElementById('graduatedSection');
-  const gd = document.getElementById('gradDivider');
+  const gs=document.getElementById('graduatedSection'),gd=document.getElementById('gradDivider');
   if(grad.length){
     gs.style.display='';gd.style.display='';
     document.getElementById('gradCount').textContent=grad.length;
@@ -442,7 +498,6 @@ function charHTML(c) {
   const [bc,bt]=badge(c);
   const prog=Math.min(100,Math.round((c.streak/3)*100));
   const prev=c.words.slice(0,3).join('、')||(c.words.length?c.words.join('、'):'（暂无词语，可手动添加）');
-  const id=c.id;
   return `<div class="char-item${c.graduated?' graduated':''}">
     <span class="char-badge ${bc}">${bt}</span>
     <div class="char-main">${c.ch}</div>
@@ -450,16 +505,16 @@ function charHTML(c) {
     <div class="char-meta">对${c.correct} 错${c.wrong} · ${c.words.length}条词${c.source?' · '+c.source:''}</div>
     <div class="char-progress"><div class="char-progress-bar" style="width:${prog}%"></div></div>
     <div class="char-actions">
-      <button class="btn btn-outline btn-sm btn-icon" onclick="openEdit('${id}')">✏️</button>
+      <button class="btn btn-outline btn-sm btn-icon" onclick="openEdit('${c.id}')">✏️</button>
       ${c.graduated
-        ?`<button class="btn btn-outline btn-sm" onclick="ungrad('${id}')">重练</button>`
-        :`<button class="btn btn-outline btn-sm" onclick="manGrad('${id}')">✓掌握</button>`}
-      <button class="btn btn-outline btn-sm btn-icon" onclick="delChar('${id}')">🗑</button>
+        ?`<button class="btn btn-outline btn-sm" onclick="ungrad('${c.id}')">重练</button>`
+        :`<button class="btn btn-outline btn-sm" onclick="manGrad('${c.id}')">✓掌握</button>`}
+      <button class="btn btn-outline btn-sm btn-icon" onclick="delChar('${c.id}')">🗑</button>
     </div>
   </div>`;
 }
 
-function toggleGraduated(el) {
+function toggleGraduated(el){
   const g=document.getElementById('graduatedGrid');
   const show=g.style.display==='none';
   g.style.display=show?'':'none';
@@ -467,19 +522,20 @@ function toggleGraduated(el) {
 }
 function delChar(id){
   if(!confirm('确认删除？'))return;
-  data.chars=data.chars.filter(c=>c.id!==id);save(data);renderWords();toast('已删除');
+  data.chars=data.chars.filter(c=>c.id!==id);
+  saveAndSync(data);renderWords();toast('已删除');
 }
 function manGrad(id){
   const c=data.chars.find(c=>c.id===id);
-  if(c){c.graduated=true;c.weight=0;save(data);renderWords();toast('已标记为掌握 🎉');}
+  if(c){c.graduated=true;c.weight=0;saveAndSync(data);renderWords();toast('已标记为掌握 🎉');}
 }
 function ungrad(id){
   const c=data.chars.find(c=>c.id===id);
-  if(c){c.graduated=false;c.streak=0;updW(c);save(data);renderWords();toast('已移回练习中');}
+  if(c){c.graduated=false;c.streak=0;updW(c);saveAndSync(data);renderWords();toast('已移回练习中');}
 }
 
 // ============================================================
-//  录入弹窗
+// 录入
 // ============================================================
 function openAddModal(){
   ['addChars','addSource','addWords'].forEach(id=>document.getElementById(id).value='');
@@ -492,20 +548,18 @@ function closeModal(){document.getElementById('addModal').classList.remove('open
 document.getElementById('addChars').addEventListener('input',function(){
   const chars=exChars(this.value);
   if(!chars.length){document.getElementById('previewArea').style.display='none';return;}
-  const all=new Set();
-  chars.forEach(ch=>findWordsFor(ch).forEach(w=>all.add(w)));
+  const all=new Set();chars.forEach(ch=>findWords(ch).forEach(w=>all.add(w)));
   const prev=[...all].slice(0,18);
   if(prev.length){
     document.getElementById('previewArea').style.display='';
     document.getElementById('previewCount').textContent=all.size;
     document.getElementById('previewWords').innerHTML=prev.map(w=>`<span class="word-chip">${w}</span>`).join('');
-  } else {document.getElementById('previewArea').style.display='none';}
+  } else document.getElementById('previewArea').style.display='none';
 });
 
 function exChars(raw){
   return [...new Set(raw.replace(/[\s,，、。！？]+/g,'').split('').filter(c=>/[\u4e00-\u9fa5]/.test(c)))];
 }
-
 function saveChars(){
   const chars=exChars(document.getElementById('addChars').value);
   const src=document.getElementById('addSource').value.trim();
@@ -520,13 +574,13 @@ function saveChars(){
     c.words=[...new Set([...mwFor,...c.words])].slice(0,18);
     data.chars.push(c);added++;
   }
-  save(data);closeModal();renderWords();
-  if(added>0) toast(`已录入 ${added} 个错字 📝${skipped.length?'，'+skipped.join('')+'已存在跳过':''}`);
+  saveAndSync(data);closeModal();renderWords();
+  if(added>0)toast(`已录入 ${added} 个错字 📝${skipped.length?'，'+skipped.join('')+'已存在跳过':''}`);
   else toast('这些字已在错字库中');
 }
 
 // ============================================================
-//  编辑词语
+// 编辑词语
 // ============================================================
 let eWds=[];
 function openEdit(id){
@@ -543,20 +597,19 @@ function renderEC(){
 function rmEW(i){eWds.splice(i,1);renderEC();}
 function addEditWord(){
   const v=document.getElementById('editNewWord').value.trim();
-  if(!v)return;
-  if(!eWds.includes(v))eWds.push(v);
+  if(!v)return;if(!eWds.includes(v))eWds.push(v);
   document.getElementById('editNewWord').value='';renderEC();
 }
 function closeEditModal(){document.getElementById('editModal').classList.remove('open');}
 function saveEdit(){
   const id=document.getElementById('editCharId').value;
   const c=data.chars.find(c=>c.id===id);
-  if(c){c.words=eWds;save(data);renderWords();toast('词语已保存');}
+  if(c){c.words=eWds;saveAndSync(data);renderWords();toast('词语已保存');}
   closeEditModal();
 }
 
 // ============================================================
-//  听写
+// 听写
 // ============================================================
 let qQ=[],qI=0,qR=[],cur=null,curWord='';
 
@@ -568,15 +621,12 @@ function startQuiz(){
   }
   document.getElementById('quizEmptyHint').style.display='none';
   document.getElementById('quizSetupCard').style.display='';
-
   const mode=document.getElementById('quizMode').value;
   const cv=parseInt(document.getElementById('quizCount').value)||active.length;
   const n=Math.min(cv||active.length,active.length);
-
-  if(mode==='weighted') qQ=wSample(active,n);
-  else if(mode==='worst') qQ=[...active].sort((a,b)=>(b.wrong-b.correct)-(a.wrong-a.correct)).slice(0,n);
+  if(mode==='weighted')qQ=wSample(active,n);
+  else if(mode==='worst')qQ=[...active].sort((a,b)=>(b.wrong-b.correct)-(a.wrong-a.correct)).slice(0,n);
   else qQ=shuffle([...active]).slice(0,n);
-
   qI=0;qR=[];data.totalSessions++;save(data);
   document.getElementById('quizSetup').style.display='none';
   document.getElementById('quizSummary').style.display='none';
@@ -595,8 +645,7 @@ function wSample(pool,n){
 }
 
 function showQ(){
-  const c=qQ[qI];cur=c;
-  const total=qQ.length;
+  const c=qQ[qI];cur=c;const total=qQ.length;
   document.getElementById('quizCountDisplay').textContent=`第 ${qI+1} 题 / 共 ${total} 题`;
   document.getElementById('sessionProgress').innerHTML=
     Array.from({length:total},(_,i)=>{
@@ -605,7 +654,6 @@ function showQ(){
       else if(i===qI)cl+=' current';
       return `<div class="${cl}"></div>`;
     }).join('');
-
   curWord=pickW(c);
   document.getElementById('quizHint').textContent=`请听写包含「${c.ch}」的词语`;
   document.getElementById('quizSubHint').textContent=`对${c.correct} 错${c.wrong}，连续正确${c.streak}次`;
@@ -620,9 +668,7 @@ function showQ(){
 function wHTML(w,ch){
   return w.split('').map(c=>c===ch?`<span style="border-bottom:3px solid var(--red);color:var(--red);font-weight:700;">${c}</span>`:c).join('');
 }
-function pickW(c){
-  return (c.words&&c.words.length)?c.words[Math.floor(Math.random()*c.words.length)]:c.ch;
-}
+function pickW(c){return(c.words&&c.words.length)?c.words[Math.floor(Math.random()*c.words.length)]:c.ch;}
 function reveal(){
   const el=document.getElementById('wRev');
   if(el){el.style.opacity='1';el.style.transition='opacity .3s';}
@@ -634,12 +680,11 @@ function markResult(ok){
   const real=data.chars.find(c=>c.id===cur.id);
   if(real){
     if(ok){real.correct++;real.streak++;}else{real.wrong++;real.streak=0;}
-    updW(real);
-    if(checkGrad(real))toast(`「${real.ch}」连续3次正确，已毕业 🎓`);
+    updW(real);if(checkGrad(real))toast(`「${real.ch}」连续3次正确，已毕业 🎓`);
   }
   data.history.unshift({ch:cur.ch,word:curWord,correct:ok,time:new Date().toISOString()});
   if(data.history.length>300)data.history=data.history.slice(0,300);
-  save(data);qR.push(ok);nextQ();
+  saveAndSync(data);qR.push(ok);nextQ();
 }
 function nextQ(){qI++;if(qI>=qQ.length)showSum();else showQ();}
 
@@ -647,8 +692,7 @@ function showSum(){
   document.getElementById('quizSession').style.display='none';
   document.getElementById('quizSummary').style.display='';
   const valid=qR.filter(r=>r!==null);
-  const cor=valid.filter(Boolean).length;
-  const wr=valid.filter(r=>r===false).length;
+  const cor=valid.filter(Boolean).length,wr=valid.filter(r=>r===false).length;
   document.getElementById('sumCorrect').textContent=cor;
   document.getElementById('sumWrong').textContent=wr;
   let h='<div style="margin-top:8px;">';
@@ -672,11 +716,10 @@ function backToSetup(){
 }
 
 // ============================================================
-//  历史
+// 历史
 // ============================================================
 function renderHistory(){
-  const list=document.getElementById('historyList');
-  const empty=document.getElementById('historyEmpty');
+  const list=document.getElementById('historyList'),empty=document.getElementById('historyEmpty');
   if(!data.history.length){list.innerHTML='';empty.style.display='';return;}
   empty.style.display='none';
   list.innerHTML=data.history.slice(0,100).map(h=>{
@@ -691,11 +734,11 @@ function renderHistory(){
 }
 function clearHistory(){
   if(!confirm('确认清空所有听写记录吗？'))return;
-  data.history=[];save(data);renderHistory();toast('记录已清空');
+  data.history=[];saveAndSync(data);renderHistory();toast('记录已清空');
 }
 
 // ============================================================
-//  页面 & 工具
+// 页面 & 工具
 // ============================================================
 function showPage(name,btn){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -722,7 +765,9 @@ function toast(msg){
 }
 document.getElementById('addModal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal();});
 document.getElementById('editModal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeEditModal();});
-renderWords();
+
+// 启动
+initSync();
 </script>
 </body>
 </html>
