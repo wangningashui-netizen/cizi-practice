@@ -16,17 +16,16 @@ body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--ink)
 .tab-btn{font-family:'Noto Sans SC',sans-serif;font-size:14px;color:var(--ink3);background:none;border:none;padding:18px 14px;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;transition:color .2s,border-color .2s;white-space:nowrap}
 .tab-btn.active{color:var(--red);border-bottom-color:var(--red);font-weight:700}
 .tab-btn:hover:not(.active){color:var(--ink2)}
-.sync-btn{font-size:13px;color:var(--ink3);background:none;border:1.5px solid var(--border);border-radius:20px;padding:5px 12px;cursor:pointer;display:flex;align-items:center;gap:5px;margin-left:8px;transition:all .2s;white-space:nowrap}
+.sync-btn{font-size:13px;color:var(--ink3);background:none;border:1.5px solid var(--border);border-radius:20px;padding:5px 12px;cursor:pointer;display:flex;align-items:center;gap:5px;margin-left:8px;transition:all .2s;white-space:nowrap;font-family:'Noto Sans SC',sans-serif}
 .sync-btn:hover{color:var(--ink2);border-color:var(--ink3)}
 .sync-btn.syncing{color:var(--amber);border-color:var(--amber)}
 .sync-btn.ok{color:var(--green);border-color:var(--green)}
 .sync-btn.err{color:var(--red);border-color:var(--red)}
-.sync-time{font-size:10px;color:var(--ink3);padding:0 8px;white-space:nowrap}
 .main{max-width:720px;margin:0 auto;padding:24px 16px 60px}
 .card{background:var(--paper);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:16px;box-shadow:0 2px 8px var(--shadow)}
 .card-title{font-size:13px;font-weight:700;color:var(--ink3);letter-spacing:1px;margin-bottom:14px}
-input[type=text],textarea,select{font-family:'Noto Sans SC',sans-serif;font-size:15px;color:var(--ink);background:var(--bg);border:1.5px solid var(--border);border-radius:8px;padding:9px 12px;width:100%;outline:none;transition:border-color .2s}
-input[type=text]:focus,textarea:focus{border-color:var(--amber)}
+input[type=text],input[type=password],textarea,select{font-family:'Noto Sans SC',sans-serif;font-size:15px;color:var(--ink);background:var(--bg);border:1.5px solid var(--border);border-radius:8px;padding:9px 12px;width:100%;outline:none;transition:border-color .2s}
+input[type=text]:focus,input[type=password]:focus,textarea:focus{border-color:var(--amber)}
 .input-row{display:flex;gap:8px;align-items:flex-start}
 .input-row input{flex:1}
 .btn{font-family:'Noto Sans SC',sans-serif;font-size:14px;font-weight:700;border:none;border-radius:8px;padding:10px 18px;cursor:pointer;transition:opacity .15s,transform .1s;white-space:nowrap;display:inline-flex;align-items:center;gap:5px}
@@ -78,8 +77,9 @@ input[type=text]:focus,textarea:focus{border-color:var(--amber)}
 .empty .big{font-size:40px;margin-bottom:8px}
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(44,36,22,.4);z-index:1000;align-items:center;justify-content:center;padding:20px}
 .modal-overlay.open{display:flex}
-.modal-box{background:var(--paper);border-radius:14px;padding:24px;width:100%;max-width:420px;box-shadow:0 8px 40px rgba(44,36,22,.18)}
-.modal-title{font-size:17px;font-weight:700;margin-bottom:16px}
+.modal-box{background:var(--paper);border-radius:14px;padding:24px;width:100%;max-width:440px;box-shadow:0 8px 40px rgba(44,36,22,.18)}
+.modal-title{font-size:17px;font-weight:700;margin-bottom:6px}
+.modal-desc{font-size:13px;color:var(--ink3);margin-bottom:16px;line-height:1.6}
 .modal-footer{display:flex;gap:8px;justify-content:flex-end;margin-top:20px}
 .form-label{font-size:12px;color:var(--ink3);margin-bottom:4px;font-weight:700;letter-spacing:.5px}
 .form-group{margin-bottom:12px}
@@ -95,7 +95,8 @@ input[type=text]:focus,textarea:focus{border-color:var(--amber)}
 .session-config{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px}
 .session-config label{font-size:13px;color:var(--ink2)}
 .session-config select{width:auto;font-size:13px;padding:7px 10px}
-.sync-banner{background:var(--amber-light);border:1px solid #f0d090;border-radius:10px;padding:12px 16px;font-size:13px;color:var(--amber);margin-bottom:16px;display:none}
+.info-box{background:var(--blue-light);border:1px solid #c2d8ea;border-radius:8px;padding:10px 14px;font-size:12px;color:var(--blue);line-height:1.6;margin-bottom:12px}
+.warn-box{background:var(--amber-light);border:1px solid #f0d090;border-radius:8px;padding:10px 14px;font-size:12px;color:var(--amber);line-height:1.6;margin-bottom:12px}
 @media(max-width:500px){.topbar-title{font-size:18px}.tab-btn{padding:16px 10px;font-size:12px}.sync-btn{font-size:12px;padding:4px 8px}.quiz-word-display{font-size:40px}.char-grid{grid-template-columns:repeat(auto-fill,minmax(120px,1fr))}}
 </style>
 </head>
@@ -106,10 +107,32 @@ input[type=text]:focus,textarea:focus{border-color:var(--amber)}
   <button class="tab-btn active" onclick="showPage('words',this)">📚 错字库</button>
   <button class="tab-btn" onclick="showPage('quiz',this)">✍️ 听写</button>
   <button class="tab-btn" onclick="showPage('history',this)">📋 记录</button>
-  <button class="sync-btn" id="syncBtn" onclick="syncNow()" title="同步数据">☁️ 同步</button>
+  <button class="sync-btn" id="syncBtn" onclick="syncNow()">☁️ 同步</button>
 </div>
 
 <div class="toast" id="toast"></div>
+
+<!-- TOKEN 设置弹窗 -->
+<div class="modal-overlay" id="tokenModal">
+  <div class="modal-box">
+    <div class="modal-title">☁️ 设置云同步</div>
+    <div class="modal-desc">输入 GitHub Token，数据就能在手机和电脑之间同步。Token 只存在本设备浏览器里，不会上传到任何地方。</div>
+    <div class="info-box">
+      如何获取 Token：<br>
+      GitHub → 头像 → Settings → Developer settings → Personal access tokens → Tokens (classic) → Generate new token (classic)<br>
+      勾选 <strong>repo</strong> 权限，Expiration 选 No expiration
+    </div>
+    <div class="form-group">
+      <div class="form-label">GitHub Token（ghp_ 开头）</div>
+      <input type="password" id="tokenInput" placeholder="ghp_xxxxxxxxxxxxxx">
+    </div>
+    <div class="warn-box" id="tokenErr" style="display:none;">Token 无效或权限不足，请重新生成</div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeTokenModal()">暂不设置</button>
+      <button class="btn btn-primary" onclick="saveToken()">保存并同步</button>
+    </div>
+  </div>
+</div>
 
 <!-- ADD MODAL -->
 <div class="modal-overlay" id="addModal">
@@ -164,7 +187,6 @@ input[type=text]:focus,textarea:focus{border-color:var(--amber)}
 
 <!-- PAGE: WORDS -->
 <div class="main page active" id="page-words">
-  <div id="syncBanner" class="sync-banner">⚠️ 有未同步的改动，点右上角「☁️ 同步」保存到云端</div>
   <div class="stats-row">
     <div class="stat-card stat-red"><div class="stat-num" id="stat-total">0</div><div class="stat-label">总错字数</div></div>
     <div class="stat-card stat-amber"><div class="stat-num" id="stat-active">0</div><div class="stat-label">练习中</div></div>
@@ -249,108 +271,149 @@ input[type=text]:focus,textarea:focus{border-color:var(--amber)}
 
 <script>
 // ============================================================
-// GitHub 同步配置
+// Gist 同步（Token 存本地，不写入代码）
 // ============================================================
-const GH = {
-  owner: 'wangningashui-netizen',
-  repo:  'cizi-practice',
-  file:  'data.json',
-  token: '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',
-  get api() {
-    return `https://api.github.com/repos/${this.owner}/${this.repo}/contents/${this.file}`;
-  }
-};
+const GIST_FILENAME = 'cizi-practice-data.json';
+const TOKEN_KEY = 'cizi_gh_token';
+const GIST_ID_KEY = 'cizi_gist_id';
 
-let syncSha = null;       // 记录文件的 sha，更新时需要
-let pendingSync = false;  // 有未同步的改动
-let syncTimer = null;     // 自动同步防抖
+function getToken() { return localStorage.getItem(TOKEN_KEY) || ''; }
+function getGistId() { return localStorage.getItem(GIST_ID_KEY) || ''; }
 
-async function ghGet() {
-  const r = await fetch(GH.api, {
-    headers: { Authorization: `token ${GH.token}`, Accept: 'application/vnd.github.v3+json' }
+async function gistGet(token, gistId) {
+  const r = await fetch(`https://api.github.com/gists/${gistId}`, {
+    headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json' }
   });
-  if (r.status === 404) return null;
-  if (!r.ok) throw new Error('读取失败 ' + r.status);
+  if (!r.ok) throw new Error(r.status);
   const j = await r.json();
-  syncSha = j.sha;
-  return JSON.parse(atob(j.content.replace(/\n/g,'')));
+  const content = j.files[GIST_FILENAME]?.content;
+  return content ? JSON.parse(content) : null;
 }
 
-async function ghPut(d) {
-  const body = { message: '数据同步 ' + new Date().toLocaleString('zh-CN'),
-    content: btoa(unescape(encodeURIComponent(JSON.stringify(d)))),
-    ...(syncSha ? { sha: syncSha } : {}) };
-  const r = await fetch(GH.api, {
-    method: 'PUT',
-    headers: { Authorization: `token ${GH.token}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
-    body: JSON.stringify(body)
+async function gistCreate(token) {
+  const r = await fetch('https://api.github.com/gists', {
+    method: 'POST',
+    headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      description: '错字练习本数据',
+      public: false,
+      files: { [GIST_FILENAME]: { content: JSON.stringify(data) } }
+    })
   });
-  if (!r.ok) throw new Error('写入失败 ' + r.status);
+  if (!r.ok) throw new Error(r.status);
   const j = await r.json();
-  syncSha = j.content.sha;
+  return j.id;
+}
+
+async function gistUpdate(token, gistId) {
+  const r = await fetch(`https://api.github.com/gists/${gistId}`, {
+    method: 'PATCH',
+    headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+    body: JSON.stringify({ files: { [GIST_FILENAME]: { content: JSON.stringify(data) } } })
+  });
+  if (!r.ok) throw new Error(r.status);
 }
 
 function setSyncState(state, msg) {
   const btn = document.getElementById('syncBtn');
+  const labels = { syncing:'⏳ 同步中', ok:'✓ 已同步', err:'✗ 失败', '':'☁️ 同步' };
+  btn.textContent = labels[state] || '☁️ 同步';
   btn.className = 'sync-btn' + (state ? ' ' + state : '');
-  btn.textContent = { syncing:'⏳ 同步中', ok:'✓ 已同步', err:'✗ 同步失败', '':'☁️ 同步' }[state] || '☁️ 同步';
   if (msg) toast(msg);
   if (state === 'ok' || state === 'err') setTimeout(() => setSyncState(''), 3000);
 }
 
 async function syncNow() {
+  const token = getToken();
+  if (!token) { openTokenModal(); return; }
   setSyncState('syncing');
   try {
-    await ghPut(data);
-    pendingSync = false;
-    document.getElementById('syncBanner').style.display = 'none';
-    setSyncState('ok', '数据已同步到云端 ☁️');
-    localStorage.setItem('lastSync', new Date().toISOString());
+    let gistId = getGistId();
+    if (!gistId) {
+      // 第一次：查找已有 gist 或新建
+      const listR = await fetch('https://api.github.com/gists', {
+        headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json' }
+      });
+      if (!listR.ok) throw new Error(listR.status);
+      const list = await listR.json();
+      const found = list.find(g => g.files[GIST_FILENAME]);
+      if (found) {
+        gistId = found.id;
+        localStorage.setItem(GIST_ID_KEY, gistId);
+        // 拉取云端数据合并
+        const remote = await gistGet(token, gistId);
+        if (remote && (remote.totalSessions || 0) > (data.totalSessions || 0)) {
+          data = remote; save(data);
+          toast('已从云端加载最新数据 ☁️');
+          renderWords();
+        }
+        await gistUpdate(token, gistId);
+      } else {
+        gistId = await gistCreate(token);
+        localStorage.setItem(GIST_ID_KEY, gistId);
+      }
+    } else {
+      await gistUpdate(token, gistId);
+    }
+    setSyncState('ok', '数据已同步 ☁️');
   } catch(e) {
-    setSyncState('err', '同步失败，请检查网络');
     console.error(e);
+    if (e.message === '401') {
+      localStorage.removeItem(TOKEN_KEY);
+      localStorage.removeItem(GIST_ID_KEY);
+      setSyncState('err', 'Token 已失效，请重新设置');
+      setTimeout(openTokenModal, 1500);
+    } else {
+      setSyncState('err', '同步失败，请检查网络');
+    }
   }
 }
 
-// 有改动时标记，5 秒后自动同步
+// 有改动时 5 秒后自动同步
+let syncTimer = null;
 function markDirty() {
-  pendingSync = true;
-  document.getElementById('syncBanner').style.display = '';
+  if (!getToken()) return;
   clearTimeout(syncTimer);
   syncTimer = setTimeout(syncNow, 5000);
 }
 
-// 启动时从 GitHub 拉取数据
+// 启动时自动同步
 async function initSync() {
+  const token = getToken();
+  if (!token) return; // 没设置 Token，跳过
+  const gistId = getGistId();
+  if (!gistId) { syncNow(); return; }
   setSyncState('syncing');
   try {
-    const remote = await ghGet();
-    if (remote) {
-      // 比较本地和云端，取最新的（按 totalSessions 判断）
-      const local = load();
-      if (!local.chars.length || (remote.totalSessions || 0) >= (local.totalSessions || 0)) {
-        data = remote;
-        save(data);
-        toast('已从云端加载最新数据 ☁️');
-      } else {
-        // 本地更新，推送到云端
-        data = local;
-        await ghPut(data);
-        toast('本地数据更新，已同步到云端');
-      }
-    } else {
-      // 云端还没有文件，用本地数据初始化
-      data = load();
-      await ghPut(data);
-      toast('已初始化云端数据 ☁️');
+    const remote = await gistGet(token, gistId);
+    if (remote && (remote.totalSessions || 0) > (data.totalSessions || 0)) {
+      data = remote; save(data); renderWords();
+      toast('已从云端加载最新数据 ☁️');
     }
     setSyncState('ok');
   } catch(e) {
-    data = load();
-    setSyncState('err', '云端连接失败，使用本地数据');
-    console.error(e);
+    setSyncState('err');
   }
-  renderWords();
+}
+
+// Token 弹窗
+function openTokenModal() {
+  document.getElementById('tokenInput').value = getToken();
+  document.getElementById('tokenErr').style.display = 'none';
+  document.getElementById('tokenModal').classList.add('open');
+}
+function closeTokenModal() { document.getElementById('tokenModal').classList.remove('open'); }
+async function saveToken() {
+  const t = document.getElementById('tokenInput').value.trim();
+  if (!t.startsWith('ghp_') && !t.startsWith('github_pat_')) {
+    document.getElementById('tokenErr').style.display = '';
+    document.getElementById('tokenErr').textContent = '格式不对，Token 应以 ghp_ 开头';
+    return;
+  }
+  localStorage.setItem(TOKEN_KEY, t);
+  localStorage.removeItem(GIST_ID_KEY);
+  closeTokenModal();
+  await syncNow();
 }
 
 // ============================================================
@@ -469,8 +532,6 @@ function checkGrad(c) {
   if(c.streak>=3&&!c.graduated){c.graduated=true;c.weight=0;return true;}
   return false;
 }
-
-// 保存并标记需同步
 function saveAndSync(d) { save(d); markDirty(); }
 
 // ============================================================
@@ -493,7 +554,6 @@ function renderWords() {
     document.getElementById('graduatedGrid').innerHTML=grad.map(charHTML).join('');
   } else {gs.style.display='none';gd.style.display='none';}
 }
-
 function charHTML(c) {
   const [bc,bt]=badge(c);
   const prog=Math.min(100,Math.round((c.streak/3)*100));
@@ -513,26 +573,15 @@ function charHTML(c) {
     </div>
   </div>`;
 }
-
 function toggleGraduated(el){
   const g=document.getElementById('graduatedGrid');
   const show=g.style.display==='none';
   g.style.display=show?'':'none';
   el.querySelector('svg').style.transform=show?'rotate(180deg)':'';
 }
-function delChar(id){
-  if(!confirm('确认删除？'))return;
-  data.chars=data.chars.filter(c=>c.id!==id);
-  saveAndSync(data);renderWords();toast('已删除');
-}
-function manGrad(id){
-  const c=data.chars.find(c=>c.id===id);
-  if(c){c.graduated=true;c.weight=0;saveAndSync(data);renderWords();toast('已标记为掌握 🎉');}
-}
-function ungrad(id){
-  const c=data.chars.find(c=>c.id===id);
-  if(c){c.graduated=false;c.streak=0;updW(c);saveAndSync(data);renderWords();toast('已移回练习中');}
-}
+function delChar(id){if(!confirm('确认删除？'))return;data.chars=data.chars.filter(c=>c.id!==id);saveAndSync(data);renderWords();toast('已删除');}
+function manGrad(id){const c=data.chars.find(c=>c.id===id);if(c){c.graduated=true;c.weight=0;saveAndSync(data);renderWords();toast('已标记为掌握 🎉');}}
+function ungrad(id){const c=data.chars.find(c=>c.id===id);if(c){c.graduated=false;c.streak=0;updW(c);saveAndSync(data);renderWords();toast('已移回练习中');}}
 
 // ============================================================
 // 录入
@@ -544,7 +593,6 @@ function openAddModal(){
   setTimeout(()=>document.getElementById('addChars').focus(),80);
 }
 function closeModal(){document.getElementById('addModal').classList.remove('open');}
-
 document.getElementById('addChars').addEventListener('input',function(){
   const chars=exChars(this.value);
   if(!chars.length){document.getElementById('previewArea').style.display='none';return;}
@@ -556,10 +604,7 @@ document.getElementById('addChars').addEventListener('input',function(){
     document.getElementById('previewWords').innerHTML=prev.map(w=>`<span class="word-chip">${w}</span>`).join('');
   } else document.getElementById('previewArea').style.display='none';
 });
-
-function exChars(raw){
-  return [...new Set(raw.replace(/[\s,，、。！？]+/g,'').split('').filter(c=>/[\u4e00-\u9fa5]/.test(c)))];
-}
+function exChars(raw){return [...new Set(raw.replace(/[\s,，、。！？]+/g,'').split('').filter(c=>/[\u4e00-\u9fa5]/.test(c)))];}
 function saveChars(){
   const chars=exChars(document.getElementById('addChars').value);
   const src=document.getElementById('addSource').value.trim();
@@ -583,44 +628,21 @@ function saveChars(){
 // 编辑词语
 // ============================================================
 let eWds=[];
-function openEdit(id){
-  const c=data.chars.find(c=>c.id===id);if(!c)return;
-  eWds=[...c.words];
-  document.getElementById('editCharId').value=id;
-  document.getElementById('editNewWord').value='';
-  renderEC();document.getElementById('editModal').classList.add('open');
-}
-function renderEC(){
-  document.getElementById('editWordChips').innerHTML=eWds.map((w,i)=>
-    `<span class="word-chip remove" onclick="rmEW(${i})">${w} ×</span>`).join('');
-}
+function openEdit(id){const c=data.chars.find(c=>c.id===id);if(!c)return;eWds=[...c.words];document.getElementById('editCharId').value=id;document.getElementById('editNewWord').value='';renderEC();document.getElementById('editModal').classList.add('open');}
+function renderEC(){document.getElementById('editWordChips').innerHTML=eWds.map((w,i)=>`<span class="word-chip remove" onclick="rmEW(${i})">${w} ×</span>`).join('');}
 function rmEW(i){eWds.splice(i,1);renderEC();}
-function addEditWord(){
-  const v=document.getElementById('editNewWord').value.trim();
-  if(!v)return;if(!eWds.includes(v))eWds.push(v);
-  document.getElementById('editNewWord').value='';renderEC();
-}
+function addEditWord(){const v=document.getElementById('editNewWord').value.trim();if(!v)return;if(!eWds.includes(v))eWds.push(v);document.getElementById('editNewWord').value='';renderEC();}
 function closeEditModal(){document.getElementById('editModal').classList.remove('open');}
-function saveEdit(){
-  const id=document.getElementById('editCharId').value;
-  const c=data.chars.find(c=>c.id===id);
-  if(c){c.words=eWds;saveAndSync(data);renderWords();toast('词语已保存');}
-  closeEditModal();
-}
+function saveEdit(){const id=document.getElementById('editCharId').value;const c=data.chars.find(c=>c.id===id);if(c){c.words=eWds;saveAndSync(data);renderWords();toast('词语已保存');}closeEditModal();}
 
 // ============================================================
 // 听写
 // ============================================================
 let qQ=[],qI=0,qR=[],cur=null,curWord='';
-
 function startQuiz(){
   const active=data.chars.filter(c=>!c.graduated);
-  if(!active.length){
-    document.getElementById('quizEmptyHint').style.display='';
-    document.getElementById('quizSetupCard').style.display='none';return;
-  }
-  document.getElementById('quizEmptyHint').style.display='none';
-  document.getElementById('quizSetupCard').style.display='';
+  if(!active.length){document.getElementById('quizEmptyHint').style.display='';document.getElementById('quizSetupCard').style.display='none';return;}
+  document.getElementById('quizEmptyHint').style.display='none';document.getElementById('quizSetupCard').style.display='';
   const mode=document.getElementById('quizMode').value;
   const cv=parseInt(document.getElementById('quizCount').value)||active.length;
   const n=Math.min(cv||active.length,active.length);
@@ -633,87 +655,44 @@ function startQuiz(){
   document.getElementById('quizSession').style.display='';
   showQ();
 }
-
 function wSample(pool,n){
-  const arr=pool.map(c=>({...c,_w:Math.max(1,c.weight)}));
-  const res=[];n=Math.min(n,arr.length);
-  for(let i=0;i<n;i++){
-    const tot=arr.reduce((s,c)=>s+c._w,0);let r=Math.random()*tot;
-    for(let j=0;j<arr.length;j++){r-=arr[j]._w;if(r<=0){res.push(arr[j]);arr.splice(j,1);break;}}
-  }
+  const arr=pool.map(c=>({...c,_w:Math.max(1,c.weight)}));const res=[];n=Math.min(n,arr.length);
+  for(let i=0;i<n;i++){const tot=arr.reduce((s,c)=>s+c._w,0);let r=Math.random()*tot;for(let j=0;j<arr.length;j++){r-=arr[j]._w;if(r<=0){res.push(arr[j]);arr.splice(j,1);break;}}}
   return res;
 }
-
 function showQ(){
   const c=qQ[qI];cur=c;const total=qQ.length;
   document.getElementById('quizCountDisplay').textContent=`第 ${qI+1} 题 / 共 ${total} 题`;
-  document.getElementById('sessionProgress').innerHTML=
-    Array.from({length:total},(_,i)=>{
-      let cl='session-dot';
-      if(i<qR.length)cl+=qR[i]===true?' correct':qR[i]===false?' wrong':'';
-      else if(i===qI)cl+=' current';
-      return `<div class="${cl}"></div>`;
-    }).join('');
+  document.getElementById('sessionProgress').innerHTML=Array.from({length:total},(_,i)=>{let cl='session-dot';if(i<qR.length)cl+=qR[i]===true?' correct':qR[i]===false?' wrong':'';else if(i===qI)cl+=' current';return `<div class="${cl}"></div>`;}).join('');
   curWord=pickW(c);
   document.getElementById('quizHint').textContent=`请听写包含「${c.ch}」的词语`;
   document.getElementById('quizSubHint').textContent=`对${c.correct} 错${c.wrong}，连续正确${c.streak}次`;
   document.getElementById('quizWordDisplay').innerHTML=`<span id="wRev" style="opacity:0">${wHTML(curWord,c.ch)}</span>`;
-  document.getElementById('quizActions').style.display='';
-  document.getElementById('quizResult').style.display='none';
-  document.getElementById('quizActions').innerHTML=`
-    <button class="btn btn-primary" style="font-size:15px;padding:12px 32px;" onclick="reveal()">👁 显示词语</button>
-    <button class="btn btn-outline" onclick="skip()">跳过</button>`;
+  document.getElementById('quizActions').style.display='';document.getElementById('quizResult').style.display='none';
+  document.getElementById('quizActions').innerHTML=`<button class="btn btn-primary" style="font-size:15px;padding:12px 32px;" onclick="reveal()">👁 显示词语</button><button class="btn btn-outline" onclick="skip()">跳过</button>`;
 }
-
-function wHTML(w,ch){
-  return w.split('').map(c=>c===ch?`<span style="border-bottom:3px solid var(--red);color:var(--red);font-weight:700;">${c}</span>`:c).join('');
-}
+function wHTML(w,ch){return w.split('').map(c=>c===ch?`<span style="border-bottom:3px solid var(--red);color:var(--red);font-weight:700;">${c}</span>`:c).join('');}
 function pickW(c){return(c.words&&c.words.length)?c.words[Math.floor(Math.random()*c.words.length)]:c.ch;}
-function reveal(){
-  const el=document.getElementById('wRev');
-  if(el){el.style.opacity='1';el.style.transition='opacity .3s';}
-  document.getElementById('quizActions').style.display='none';
-  document.getElementById('quizResult').style.display='';
-}
+function reveal(){const el=document.getElementById('wRev');if(el){el.style.opacity='1';el.style.transition='opacity .3s';}document.getElementById('quizActions').style.display='none';document.getElementById('quizResult').style.display='';}
 function skip(){qR.push(null);nextQ();}
 function markResult(ok){
   const real=data.chars.find(c=>c.id===cur.id);
-  if(real){
-    if(ok){real.correct++;real.streak++;}else{real.wrong++;real.streak=0;}
-    updW(real);if(checkGrad(real))toast(`「${real.ch}」连续3次正确，已毕业 🎓`);
-  }
+  if(real){if(ok){real.correct++;real.streak++;}else{real.wrong++;real.streak=0;}updW(real);if(checkGrad(real))toast(`「${real.ch}」连续3次正确，已毕业 🎓`);}
   data.history.unshift({ch:cur.ch,word:curWord,correct:ok,time:new Date().toISOString()});
   if(data.history.length>300)data.history=data.history.slice(0,300);
   saveAndSync(data);qR.push(ok);nextQ();
 }
 function nextQ(){qI++;if(qI>=qQ.length)showSum();else showQ();}
-
 function showSum(){
-  document.getElementById('quizSession').style.display='none';
-  document.getElementById('quizSummary').style.display='';
-  const valid=qR.filter(r=>r!==null);
-  const cor=valid.filter(Boolean).length,wr=valid.filter(r=>r===false).length;
-  document.getElementById('sumCorrect').textContent=cor;
-  document.getElementById('sumWrong').textContent=wr;
+  document.getElementById('quizSession').style.display='none';document.getElementById('quizSummary').style.display='';
+  const valid=qR.filter(r=>r!==null);const cor=valid.filter(Boolean).length,wr=valid.filter(r=>r===false).length;
+  document.getElementById('sumCorrect').textContent=cor;document.getElementById('sumWrong').textContent=wr;
   let h='<div style="margin-top:8px;">';
-  qQ.forEach((c,i)=>{
-    if(qR[i]===null)return;
-    const ok=qR[i];
-    const w=data.history.find(h=>h.ch===c.ch)?.word||c.ch;
-    h+=`<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px;">
-      <span style="font-size:20px;font-family:'ZCOOL XiaoWei',serif;">${c.ch}</span>
-      <span style="flex:1;color:var(--ink2);">${w}</span>
-      <span class="tag ${ok?'tag-c':'tag-w'}">${ok?'✓ 对':'✗ 错'}</span>
-    </div>`;
-  });
-  h+='</div>';
-  document.getElementById('sumDetails').innerHTML=h;
-  renderWords();
+  qQ.forEach((c,i)=>{if(qR[i]===null)return;const ok=qR[i];const w=data.history.find(h=>h.ch===c.ch)?.word||c.ch;
+    h+=`<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px;"><span style="font-size:20px;font-family:'ZCOOL XiaoWei',serif;">${c.ch}</span><span style="flex:1;color:var(--ink2);">${w}</span><span class="tag ${ok?'tag-c':'tag-w'}">${ok?'✓ 对':'✗ 错'}</span></div>`;});
+  h+='</div>';document.getElementById('sumDetails').innerHTML=h;renderWords();
 }
-function backToSetup(){
-  document.getElementById('quizSummary').style.display='none';
-  document.getElementById('quizSetup').style.display='';
-}
+function backToSetup(){document.getElementById('quizSummary').style.display='none';document.getElementById('quizSetup').style.display='';}
 
 // ============================================================
 // 历史
@@ -722,20 +701,10 @@ function renderHistory(){
   const list=document.getElementById('historyList'),empty=document.getElementById('historyEmpty');
   if(!data.history.length){list.innerHTML='';empty.style.display='';return;}
   empty.style.display='none';
-  list.innerHTML=data.history.slice(0,100).map(h=>{
-    const d=new Date(h.time);
-    const ts=`${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}`;
-    return `<div class="history-item">
-      <span class="history-char">${h.ch}</span>
-      <span class="history-word">${h.word}<span class="tag ${h.correct?'tag-c':'tag-w'}">${h.correct?'✓ 对':'✗ 错'}</span></span>
-      <span class="history-time">${ts}</span>
-    </div>`;
-  }).join('');
+  list.innerHTML=data.history.slice(0,100).map(h=>{const d=new Date(h.time);const ts=`${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}`;
+    return `<div class="history-item"><span class="history-char">${h.ch}</span><span class="history-word">${h.word}<span class="tag ${h.correct?'tag-c':'tag-w'}">${h.correct?'✓ 对':'✗ 错'}</span></span><span class="history-time">${ts}</span></div>`;}).join('');
 }
-function clearHistory(){
-  if(!confirm('确认清空所有听写记录吗？'))return;
-  data.history=[];saveAndSync(data);renderHistory();toast('记录已清空');
-}
+function clearHistory(){if(!confirm('确认清空所有听写记录吗？'))return;data.history=[];saveAndSync(data);renderHistory();toast('记录已清空');}
 
 // ============================================================
 // 页面 & 工具
@@ -747,26 +716,16 @@ function showPage(name,btn){
   if(btn)btn.classList.add('active');
   if(name==='history')renderHistory();
   if(name==='words')renderWords();
-  if(name==='quiz'){
-    const active=data.chars.filter(c=>!c.graduated);
-    document.getElementById('quizEmptyHint').style.display=active.length?'none':'';
-    document.getElementById('quizSetupCard').style.display=active.length?'':'none';
-  }
+  if(name==='quiz'){const active=data.chars.filter(c=>!c.graduated);document.getElementById('quizEmptyHint').style.display=active.length?'none':'';document.getElementById('quizSetupCard').style.display=active.length?'':'none';}
 }
-function shuffle(a){
-  const b=[...a];
-  for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}
-  return b;
-}
-function toast(msg){
-  const t=document.getElementById('toast');
-  t.textContent=msg;t.classList.add('show');
-  clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2400);
-}
+function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2400);}
+
 document.getElementById('addModal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal();});
 document.getElementById('editModal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeEditModal();});
+document.getElementById('tokenModal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeTokenModal();});
 
-// 启动
+renderWords();
 initSync();
 </script>
 </body>
